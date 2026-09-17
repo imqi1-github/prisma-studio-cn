@@ -97,9 +97,16 @@ export const TRANSLATIONS: Record<string, string> = {
   'Is': '为',
   'Is not': '不为',
   'Empty': '空',
+  // 文本搜索运算符(value 仍是协议小写标记,只有 label 参与替换)
+  'Like': 'LIKE 匹配',
+  'Not like': 'NOT LIKE 匹配',
+  'Ilike': 'ILIKE 匹配',
+  'Not ilike': 'NOT ILIKE 匹配',
   'SQL WHERE clause': 'SQL WHERE 子句',
+  'WHERE clause': 'WHERE 子句',
   'Raw SQL': '原生 SQL',
   'Filter with AI': 'AI 筛选',
+  'Filter with AI ...': '用 AI 筛选…',
   'Apply AI filter': '应用 AI 筛选',
   'Apply SQL filter': '应用 SQL 筛选',
   'AI filtering failed.': 'AI 筛选失败。',
@@ -161,6 +168,14 @@ export const TRANSLATIONS: Record<string, string> = {
   'Generate SQL with AI': '用 AI 生成 SQL',
   'Copy recommendation': '复制建议',
   'All good': '全部正常',
+  'Write SQL...': '编写 SQL…',
+  'Query Details': '查询详情',
+  'Analysis': '分析',
+  'Waiting for the current analysis to finish.': '等待当前分析完成。',
+  'Query error:': '查询错误:',
+  'AI rationale:': 'AI 依据:',
+  'AI SQL correction error:': 'AI SQL 修正错误:',
+  'AI SQL generation error:': 'AI SQL 生成错误:',
   'AI SQL generation failed.': 'AI SQL 生成失败。',
   'AI SQL correction failed.': 'AI SQL 修正失败。',
 
@@ -169,6 +184,25 @@ export const TRANSLATIONS: Record<string, string> = {
   'Filter queries by table': '按数据表筛选查询',
   'Rows Returned': '返回行数',
   'Avg latency': '平均延迟',
+  'Latency': '延迟',
+  'Latency high to low': '按延迟从高到低',
+  'Latency low to high': '按延迟从低到高',
+  'Total': '总计',
+  'Errors': '错误数',
+  'Queries': '查询',
+  'Absolute time range': '绝对时间范围',
+  'Apply range': '应用时间范围',
+  'More quick ranges': '更多快捷范围',
+  'Last 5 minutes': '最近 5 分钟',
+  'Last 15 minutes': '最近 15 分钟',
+  'Last 30 minutes': '最近 30 分钟',
+  'Last 1 hour': '最近 1 小时',
+  'Last 3 hours': '最近 3 小时',
+  'Last 6 hours': '最近 6 小时',
+  'Last 12 hours': '最近 12 小时',
+  'Last 24 hours': '最近 24 小时',
+  'Last 2 days': '最近 2 天',
+  'Last 7 days': '最近 7 天',
   'Executions high to low': '按执行次数从高到低',
   'Executions low to high': '按执行次数从低到高',
   'Rows returned high to low': '按返回行数从高到低',
@@ -253,6 +287,32 @@ export const TRANSLATIONS: Record<string, string> = {
   // 运行时按整节点精确匹配等不到右括号,必须靠构建期替换这一段前缀
   'Editing in local time (': '以本地时间编辑(',
 
+  // —— 空状态、检索与命令面板 ——
+  'No results found': '未找到结果',
+  "It doesn't look like you have any data in this table.": '这个表里好像还没有任何数据。',
+  'No columns match this search.': '没有符合该搜索的列。',
+  'No operators match this search.': '没有符合该搜索的运算符。',
+  'No matching commands.': '没有匹配的命令。',
+  'Invalid search query': '搜索查询无效',
+  'Search commands, tables, and Studio views.': '搜索命令、数据表与 Studio 视图。',
+  'No database tables found. Connect to a database to see your schema.': '未找到数据表。请连接数据库以查看架构。',
+  'No schemas found': '未找到架构',
+  'Loading schemas...': '正在加载架构…',
+  'No positive numeric values to visualize.': '没有可可视化的正数值。',
+  'Jump to beginning': '跳到开头',
+  'Jump to end': '跳到末尾',
+  'Match system theme': '跟随系统主题',
+  'Find out how to see your Prisma ORM calls.': '了解如何查看你的 Prisma ORM 调用。',
+  'toggle interactivity': '切换画布交互',
+
+  // —— 数据列统计面板 ——
+  'Aggregations': '聚合',
+  'Numeric': '数值',
+  'Indexed': '已建索引',
+  'Preview': '预览',
+  'Suggested': '建议',
+  'Table': '数据表',
+
   // —— 拖拽辅助说明(dnd-kit)——
   'To pick up a draggable item, press the space bar.':
     '要拾取可拖动项,请按空格键。',
@@ -298,6 +358,12 @@ export const PATTERNS: Array<[RegExp, string]> = [
   // 拖拽整段说明(dnd-kit 拼接串)
   [/^To pick up a draggable item[\s\S]*escape to cancel\.$/,
     '要拾取可拖动项,请按空格键。拖动时,使用方向键移动该项;再次按空格键放置到新位置,或按 Esc 键取消。'],
+  // 日期/统计面板的短词:打包产物里存在 `ye+"Month"` / `Cr(...,"Time")` /
+  // `t+"Size"` 这类属性名拼接,若走构建期替换会破坏日期库与画布逻辑,
+  // 因此只放在运行时正则里,翻译落到渲染后的文本节点
+  [/^Month$/, '月'],
+  [/^Time$/, '时间'],
+  [/^Size$/, '大小'],
 ]
 
 /**
