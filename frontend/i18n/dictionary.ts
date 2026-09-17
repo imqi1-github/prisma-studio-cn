@@ -182,6 +182,12 @@ export const TRANSLATIONS: Record<string, string> = {
   'Primary Key': '主键',
   'Foreign Key': '外键',
   'Nullable': '可空',
+  // 数据表格列头徽标(注意与上面架构可视化的大小写不同)
+  'Primary key': '主键',
+  'Auto-increment': '自增',
+  'Computed': '计算列',
+  'Required - not nullable, computed, auto-incrementing, and has no default value':
+    '必填——不可为空、计算列、自增且无默认值',
   'Foreign key - references': '外键 - 引用',
   'Find roots': '查找根节点',
   'Zoom to Fit': '缩放至适应',
@@ -234,6 +240,8 @@ export const TRANSLATIONS: Record<string, string> = {
   'Studio theme': 'Studio 主题',
   'Toggle theme': '切换主题',
   'Control character': '控制字符',
+  // 「数据库」页签激活时,Studio 的兜底视图(被看板面板覆盖,仅作兜底翻译)
+  'This view was incorrectly loaded, please report this bug.': '视图加载有误,请反馈此问题。',
 
   // —— 日期选择器 ——
   'Choose the Month': '选择月份',
@@ -241,6 +249,9 @@ export const TRANSLATIONS: Record<string, string> = {
   'Go to the Next Month': '下个月',
   'Go to the Previous Month': '上个月',
   'Week Number': '周数',
+  // 日期单元格编辑弹层:JSX 把它拆成「前缀 + 时区 + )」三个文本节点,
+  // 运行时按整节点精确匹配等不到右括号,必须靠构建期替换这一段前缀
+  'Editing in local time (': '以本地时间编辑(',
 
   // —— 拖拽辅助说明(dnd-kit)——
   'To pick up a draggable item, press the space bar.':

@@ -108,6 +108,7 @@ async function start(args: StudioArgs): Promise<void> {
     allowedOrigins,
     auth,
     executor,
+    connectionString,
   })
 
   const url = `http://localhost:${port}`

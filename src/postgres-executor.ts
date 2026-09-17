@@ -22,16 +22,24 @@ const PRISMA_ORM_SPECIFIC_QUERY_PARAMETERS = [
 
 /** 创建基于 postgres.js 的 Studio 执行器。 */
 export async function createPostgresExecutor(connectionString: string): Promise<Executor> {
+  const client = postgres(toPostgresJsUrl(connectionString))
+
+  process.once('SIGINT', () => client.end())
+  process.once('SIGTERM', () => client.end())
+
+  return createPostgresJSExecutor(client)
+}
+
+/**
+ * 移除 Prisma ORM 专属查询参数,返回 postgres.js 可直接使用的连接串。
+ * Studio 执行器与数据库看板共用。
+ */
+export function toPostgresJsUrl(connectionString: string): string {
   const connectionURL = new URL(connectionString)
 
   for (const queryParameter of PRISMA_ORM_SPECIFIC_QUERY_PARAMETERS) {
     connectionURL.searchParams.delete(queryParameter)
   }
 
-  const client = postgres(connectionURL.toString())
-
-  process.once('SIGINT', () => client.end())
-  process.once('SIGTERM', () => client.end())
-
-  return createPostgresJSExecutor(client)
+  return connectionURL.toString()
 }

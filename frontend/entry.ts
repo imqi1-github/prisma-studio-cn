@@ -5,6 +5,7 @@ import { createElement } from 'react'
 import { createRoot } from 'react-dom/client'
 
 import { installChineseLocalization } from './i18n/index.js'
+import { installDatabasePanel } from './database-panel.js'
 import { isStudioAdapterType, type StudioConfig } from '../src/studio-frontend-shared.js'
 
 function getStudioConfig(): StudioConfig {
@@ -51,6 +52,9 @@ createRoot(getRootElement()).render(createElement(Studio, { adapter, onEvent }))
 // 挂在页面右缘的「退出登录」入口:注销会话并回到登录页。
 // 配色跟随系统深浅色(与登录页同源的 studio.css 主题色),不做手动切换。
 installLogoutButton()
+
+// 侧边栏「数据库」页签:注入导航链接 + iframe 看板(只读,查看库定义与表 DDL)。
+installDatabasePanel()
 
 function installLogoutButton(): void {
   const style = document.createElement('style')

@@ -6,6 +6,8 @@ import type { Executor, SequenceExecutor } from '@prisma/studio-core/data'
 import { type SerializedError, serializeError, type StudioBFFRequest } from '@prisma/studio-core/data/bff'
 
 import { SESSION_COOKIE_NAME, type StudioAuthService } from './auth.js'
+import { handleDbAdminApi } from './db-admin.js'
+import { getDatabaseDashboardHtml } from './db-dashboard-page.js'
 import {
   STUDIO_CSS_FILE_NAME,
   STUDIO_JS_FILE_NAME,
@@ -248,12 +250,15 @@ export function createStudioRequestHandler({
   auth,
   executor,
   allowedOrigins,
+  connectionString,
 }: {
   adapter: StudioAdapterType
   auth: StudioAuthService
   executor: Executor
   /** 除本机地址外额外放行的 Origin,由 CLI 从环境变量与配置文件解析 */
   allowedOrigins: readonly string[]
+  /** 数据库连接串,供「数据库」看板的只读接口(/db-api)使用 */
+  connectionString: string
 }): (request: Request) => Promise<Response> {
   return async (request) => {
     if (!isAllowedStudioOrigin(request, allowedOrigins)) {
@@ -295,6 +300,18 @@ export function createStudioRequestHandler({
       (pathname === `/${STUDIO_JS_FILE_NAME}` || pathname === `/${STUDIO_CSS_FILE_NAME}`)
     ) {
       return serveStudioAsset(pathname)
+    }
+
+    // 「数据库」看板页:由前端通过 iframe 挂载(见 frontend/database-panel.ts)
+    if (isGetOrHeadRequest(request.method) && pathname === '/db-dashboard') {
+      return textResponse(getDatabaseDashboardHtml(), 200, { 'Content-Type': contentTypeFor('index.html') })
+    }
+
+    if (request.method === 'POST' && pathname.startsWith('/db-api/')) {
+      const action = pathname.slice('/db-api/'.length)
+      const payload = await request.json().catch(() => undefined)
+
+      return (await handleDbAdminApi(action, payload, connectionString)) ?? textResponse('未找到', 404)
     }
 
     if (request.method === 'POST' && pathname === '/bff') {
