@@ -1,0 +1,10 @@
+# 构建工具依赖(仅 devDependencies;运行时依赖已收入 vendor/,必须随仓库提交)
+/node_modules/
+
+# 构建产物中的临时文件(cli.js / studio.js / studio.css 三个产物随仓库提交,克隆后可直接运行)
+/build/server.log
+/build/metafile.json
+/build/ui-strings.txt
+
+# 临时目录
+/.vendor-tmp/

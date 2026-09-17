@@ -1,0 +1,51 @@
+{
+  "name": "prisma-studio-zh",
+  "version": "1.0.0",
+  "description": "Prisma Studio 中文版:仅支持 PostgreSQL 的独立本地化版本,零运行时外部依赖",
+  "license": "Apache-2.0",
+  "author": "棋",
+  "type": "module",
+  "bin": {
+    "prisma-studio-zh": "build/cli.js"
+  },
+  "files": [
+    "build/cli.js",
+    "build/studio.js",
+    "build/studio.css",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/imqi1-github/prisma-studio-zh.git"
+  },
+  "homepage": "https://github.com/imqi1-github/prisma-studio-zh#readme",
+  "bugs": "https://github.com/imqi1-github/prisma-studio-zh/issues",
+  "keywords": [
+    "prisma",
+    "studio",
+    "prisma-studio",
+    "postgresql",
+    "postgres",
+    "database-gui",
+    "chinese",
+    "i18n"
+  ],
+  "engines": {
+    "node": ">=20.19"
+  },
+  "scripts": {
+    "build": "tsx scripts/build.ts",
+    "prune-vendor": "tsx scripts/prune-vendor.ts",
+    "start": "node build/cli.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "~22.15.0",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "esbuild": "^0.25.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.4.0"
+  }
+}

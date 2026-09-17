@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["node"],
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "paths": {
+      // 运行时依赖全部收入 vendor/,esbuild 用 nodePaths 解析;类型检查在此逐个子路径
+      // 映射到声明文件(NodeNext 的 ESM 模式不把 paths 候选解析为目录/包)
+      "@prisma/studio-core/data": ["vendor/node_modules/@prisma/studio-core/dist/data/index.d.ts"],
+      "@prisma/studio-core/data/bff": ["vendor/node_modules/@prisma/studio-core/dist/data/bff/index.d.ts"],
+      "@prisma/studio-core/data/postgres-core": ["vendor/node_modules/@prisma/studio-core/dist/data/postgres-core/index.d.ts"],
+      "@prisma/studio-core/data/postgresjs": ["vendor/node_modules/@prisma/studio-core/dist/data/postgresjs/index.d.ts"],
+      "@prisma/studio-core/ui": ["vendor/node_modules/@prisma/studio-core/dist/ui/index.d.ts"],
+      "postgres": ["vendor/node_modules/postgres/types/index.d.ts"]
+    },
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true
+  },
+  "include": ["src", "frontend", "scripts"]
+}
