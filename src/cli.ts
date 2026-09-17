@@ -3,7 +3,7 @@ import { openInBrowser } from './browser.js'
 import { createStudioRequestHandler } from './handler.js'
 import { createPostgresExecutor } from './postgres-executor.js'
 import { resolveStudioPort } from './ports.js'
-import { resolveCredentials, resolveDatabaseUrl, type ConfiguredValue } from './config.js'
+import { resolveAllowedOrigins, resolveCredentials, resolveDatabaseUrl, type ConfiguredValue } from './config.js'
 import { createStudioAuthService } from './auth.js'
 import { startStudioServer } from './server.js'
 import type { StudioAdapterType } from './studio-frontend-shared.js'
@@ -95,11 +95,19 @@ async function start(args: StudioArgs): Promise<void> {
 
   const auth = createStudioAuthService({ username: username.value, password: password.value })
 
+  // 同源检查的白名单:本机两种写法始终放行,反代透传 Host 的域名访问无需配置,
+  // 这里再并上用户显式声明的 allowedOrigins(兜底 Host 被改写的部署方式)
+  const allowedOrigins = [
+    `http://localhost:${port}`,
+    `http://127.0.0.1:${port}`,
+    ...(await resolveAllowedOrigins({ config: args.config })),
+  ]
+
   const handler = createStudioRequestHandler({
     adapter: 'postgres' satisfies StudioAdapterType,
+    allowedOrigins,
     auth,
     executor,
-    port,
   })
 
   const url = `http://localhost:${port}`
@@ -256,6 +264,12 @@ ${bold('登录凭据(必须配置,否则拒绝启动)')}
   环境变量(优先):STUDIO_USERNAME 与 STUDIO_PASSWORD
   配置文件:JSON 配置中的 "username" 与 "password" 字段
   未登录时,页面与所有数据接口均被拒绝访问
+
+${bold('反向代理 / 跨域')}
+
+  同源请求与域名反代(Host 透传)默认即可访问;
+  需要额外放行域名时,设置 STUDIO_ALLOWED_ORIGINS 环境变量(逗号分隔)
+  或在 JSON 配置中加入 "allowedOrigins": ["https://example.com"]
 
 ${bold('示例')}
 

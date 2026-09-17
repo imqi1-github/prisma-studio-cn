@@ -1,6 +1,8 @@
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 
+import { UserFacingError } from './errors.js'
+
 /**
  * 数据库连接串解析顺序(均为本地零依赖实现,替代 @prisma/config):
  *
@@ -13,6 +15,9 @@ import { resolve } from 'node:path'
  * 登录凭据(username / password)按以下优先级解析:
  * 1. `STUDIO_USERNAME` / `STUDIO_PASSWORD` 环境变量
  * 2. JSON 配置文件中的 `username` / `password` 字段
+ *
+ * 额外放行的跨域 Origin(allowedOrigins)取 JSON 配置文件的 `allowedOrigins`
+ * 数组与 `STUDIO_ALLOWED_ORIGINS` 环境变量(逗号分隔)的并集。
  */
 
 const JSON_CONFIG_CANDIDATES = ['prisma-studio.config.json'] as const
@@ -119,6 +124,62 @@ export async function resolveCredentials(options: { config?: string }): Promise<
       ? { value: process.env.STUDIO_PASSWORD, source: '环境变量' }
       : configPassword,
   }
+}
+
+/**
+ * 解析额外放行的跨域 Origin:JSON 配置文件的 `allowedOrigins` 数组与
+ * `STUDIO_ALLOWED_ORIGINS` 环境变量(逗号分隔)取并集,逐项归一化为
+ * origin(协议 + 域名 + 端口)并去重;写法无效的条目直接拒绝启动。
+ */
+export async function resolveAllowedOrigins(options: { config?: string }): Promise<string[]> {
+  const configPaths = options.config
+    ? [resolve(options.config)]
+    : JSON_CONFIG_CANDIDATES.map((candidate) => resolve(candidate))
+
+  const entries: string[] = []
+
+  for (const filePath of configPaths) {
+    const { exists, record } = await readJsonConfig(filePath)
+
+    if (!exists) {
+      continue
+    }
+
+    if (Array.isArray(record['allowedOrigins'])) {
+      entries.push(...record['allowedOrigins'].filter((item): item is string => typeof item === 'string'))
+    }
+
+    // 与连接串解析保持一致:只读取第一个存在的 JSON 配置文件
+    break
+  }
+
+  if (process.env.STUDIO_ALLOWED_ORIGINS) {
+    entries.push(...process.env.STUDIO_ALLOWED_ORIGINS.split(','))
+  }
+
+  const origins: string[] = []
+
+  for (const entry of entries) {
+    const trimmed = entry.trim()
+
+    if (trimmed === '') {
+      continue
+    }
+
+    try {
+      const origin = new URL(trimmed).origin
+
+      if (!origins.includes(origin)) {
+        origins.push(origin)
+      }
+    } catch {
+      throw new UserFacingError(
+        `允许跨域配置中的 "${trimmed}" 不是有效的地址,请写成带协议的完整形式,如 https://studio.example.com 。`,
+      )
+    }
+  }
+
+  return origins
 }
 
 interface JsonConfig {

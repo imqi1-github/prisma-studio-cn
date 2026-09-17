@@ -49,6 +49,27 @@ STUDIO_PASSWORD=s3cret     # 登录密码
 - 会话保存在服务进程内存中,**重启 Studio 后需要重新登录**;
 - 密码校验使用 SHA-256 摘要 + 恒定时间比较,进程内不保留明文(启动横幅也只显示用户名)。
 
+### 反向代理与跨域
+
+服务端做同源检查,以下情形开箱即用、**无需任何配置**:本机直接访问(`localhost` / `127.0.0.1`),以及通过域名反向代理访问(nginx、宝塔等默认透传 `Host` 头的部署方式)。
+
+若你的反代会改写 `Host` 头,或需要从别的域名访问,把站点域名加入白名单,环境变量与配置文件取并集:
+
+```bash
+STUDIO_ALLOWED_ORIGINS=https://studio.example.com,https://api.example.com
+```
+
+```json
+{
+  "url": "postgres://...",
+  "username": "admin",
+  "password": "s3cret",
+  "allowedOrigins": ["https://studio.example.com"]
+}
+```
+
+不在白名单内的跨站请求会被拒绝(403 禁止访问),这是 CSRF 防护层。
+
 ### 命令行参数
 
 ```

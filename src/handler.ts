@@ -215,7 +215,12 @@ function getLoginHtml(): string {
             return
           }
 
-          errorBox.textContent = response.status === 401 ? '用户名或密码错误。' : '登录失败,请稍后重试。'
+          errorBox.textContent =
+            response.status === 401
+              ? '用户名或密码错误。'
+              : response.status === 403
+                ? '当前地址被服务器拒绝,若通过域名反向代理访问,请在配置文件的 allowedOrigins 中加入站点域名。'
+                : '登录失败,请稍后重试。'
           errorBox.classList.add('visible')
         }).catch(function () {
           errorBox.textContent = '网络错误,请稍后重试。'
@@ -242,15 +247,16 @@ export function createStudioRequestHandler({
   adapter,
   auth,
   executor,
-  port,
+  allowedOrigins,
 }: {
   adapter: StudioAdapterType
   auth: StudioAuthService
   executor: Executor
-  port: number
+  /** 除本机地址外额外放行的 Origin,由 CLI 从环境变量与配置文件解析 */
+  allowedOrigins: readonly string[]
 }): (request: Request) => Promise<Response> {
   return async (request) => {
-    if (!isAllowedStudioOrigin(request, port)) {
+    if (!isAllowedStudioOrigin(request, allowedOrigins)) {
       return textResponse('禁止访问', 403)
     }
 
@@ -547,21 +553,37 @@ function textResponse(text: string, status: number, headers?: Record<string, str
   })
 }
 
-function isAllowedStudioOrigin(request: Request, port: number): boolean {
+/**
+ * 同源检查,充当 CSRF 防护层:浏览器在跨站请求上会携带 Origin 头,
+ * 与本服务不一致时拒绝全部写操作。
+ *
+ * 放行情形:
+ * 1. 无 Origin 头(curl、页面导航等非浏览器跨站场景);
+ * 2. Origin 的 host 与请求头 Host 一致 —— 本地直接访问与任意域名的反向代理
+ *    (nginx/宝塔默认透传 Host)都走这条,因此生产环境无需额外配置;
+ * 3. Origin 在 allowedOrigins 显式名单内(含本机 localhost/127.0.0.1 地址,
+ *    兜底 Host 被反代改写的部署方式)。
+ */
+function isAllowedStudioOrigin(request: Request, allowedOrigins: readonly string[]): boolean {
   const origin = request.headers.get('Origin')
 
   if (origin === null) {
     return true
   }
 
-  try {
-    const normalizedOrigin = new URL(origin).origin
+  let originUrl: URL
 
-    return (
-      normalizedOrigin === new URL(`http://localhost:${port}`).origin ||
-      normalizedOrigin === new URL(`http://127.0.0.1:${port}`).origin
-    )
+  try {
+    originUrl = new URL(origin)
   } catch {
     return false
   }
+
+  const host = request.headers.get('Host')
+
+  if (host !== null && originUrl.host === host) {
+    return true
+  }
+
+  return allowedOrigins.includes(originUrl.origin)
 }
