@@ -95,7 +95,7 @@ async function main(): Promise<void> {
  */
 function applySqlEditorExecutionPatch(code: string): { code: string; applied: boolean } {
   const currentStatementExecution =
-    /function ([A-Za-z0-9_$]+)\(\)\{let [A-Za-z0-9_$]+=[A-Za-z0-9_$]+\.current,([A-Za-z0-9_$]+)=[A-Za-z0-9_$]+\.trim\(\);return![A-Za-z0-9_$]+\|\|\2\.length===0\?\2:[A-Za-z0-9_$]+\(\{cursorIndex:[A-Za-z0-9_$]+\.state\.selection\.main\.head,sql:[A-Za-z0-9_$]+\}\)\?\.statement\?\?\2\}/
+    /function ([A-Za-z0-9_$]+)\(\)\{let ([A-Za-z0-9_$]+)=([A-Za-z0-9_$]+)\.current,([A-Za-z0-9_$]+)=([A-Za-z0-9_$]+)\.trim\(\);return!\2\|\|\4\.length===0\?\4:[A-Za-z0-9_$]+\(\{cursorIndex:\2\.state\.selection\.main\.head,sql:\5\}\)\?\.statement\?\?\4\}/
   const match = currentStatementExecution.exec(code)
 
   if (match === null) {
@@ -103,7 +103,7 @@ function applySqlEditorExecutionPatch(code: string): { code: string; applied: bo
   }
 
   return {
-    code: code.replace(match[0], `function ${match[1]}(){return ${match[2]}.trim()}`),
+    code: code.replace(match[0], `function ${match[1]}(){return ${match[5]}.trim()}`),
     applied: true,
   }
 }
