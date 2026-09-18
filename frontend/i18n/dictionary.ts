@@ -336,6 +336,8 @@ export const TRANSLATIONS: Record<string, string> = {
  * 动态文本的正则翻译规则(仅运行时兜底;替换串支持 $1、$2 捕获组引用)。
  */
 export const PATTERNS: Array<[RegExp, string]> = [
+  // 可视化空状态节点标题:仅运行时翻译,避免破坏内部的空卡片判断值
+  [/^No Tables Found$/, '未找到数据表'],
   // 行数 / 分页
   [/^(\d+)\s+rows?$/i, '$1 行'],
   [/^(\d+)\s+row(?:\(s\)|s?)\s+returned\s+in\s+([\d.]+)ms$/i, '返回 $1 行，耗时 $2 毫秒'],
