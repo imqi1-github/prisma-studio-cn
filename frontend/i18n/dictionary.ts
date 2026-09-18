@@ -54,6 +54,7 @@ export const TRANSLATIONS: Record<string, string> = {
   // —— 数据表格 ——
   'Table grid': '数据表格',
   'Row selection spacer': '行选择列',
+  'No tables found': '未找到数据表',
   'Pin column': '固定列',
   'Unpin column': '取消固定列',
   'Resize column': '调整列宽',
@@ -337,6 +338,7 @@ export const TRANSLATIONS: Record<string, string> = {
 export const PATTERNS: Array<[RegExp, string]> = [
   // 行数 / 分页
   [/^(\d+)\s+rows?$/i, '$1 行'],
+  [/^(\d+)\s+row(?:\(s\)|s?)\s+returned\s+in\s+([\d.]+)ms$/i, '返回 $1 行，耗时 $2 毫秒'],
   [/^Save\s+(\d+)\s+rows?$/, '保存 $1 行'],
   [/^Discard edits to (\d+)\s+cells?\?$/, '放弃对 $1 个单元格的修改?'],
   [/^Discard changes to (\d+)\s+cells?\?$/, '放弃对 $1 个单元格的更改?'],

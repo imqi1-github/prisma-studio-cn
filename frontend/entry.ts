@@ -30,6 +30,7 @@ function getRootElement(): HTMLElement {
 
 // 先安装汉化,再渲染,尽量避免英文闪现
 installChineseLocalization()
+installSqlEditorScrollStyle()
 
 const adapter = createPostgresAdapter({
   executor: createStudioBFFClient({ url: '/bff' }),
@@ -55,6 +56,21 @@ installLogoutButton()
 
 // 侧边栏「数据库」页签:注入导航链接 + iframe 看板(只读,查看库定义与表 DDL)。
 installDatabasePanel()
+
+function installSqlEditorScrollStyle(): void {
+  const style = document.createElement('style')
+
+  style.textContent = `
+.ps .cm-editor {
+  max-height: min(50vh, 32rem);
+}
+.ps .cm-scroller {
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+}`
+
+  document.head.appendChild(style)
+}
 
 function installLogoutButton(): void {
   const style = document.createElement('style')
