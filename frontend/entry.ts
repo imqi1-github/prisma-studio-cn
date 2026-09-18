@@ -62,7 +62,7 @@ function installSqlEditorScrollStyle(): void {
 
   style.textContent = `
 .ps .cm-editor {
-  max-height: min(50vh, 32rem);
+  max-height: 80vh;
 }
 .ps .cm-scroller {
   overflow-x: auto !important;
