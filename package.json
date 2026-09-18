@@ -1,12 +1,12 @@
 {
-  "name": "prisma-studio-zh",
+  "name": "prisma-studio-cn",
   "version": "1.0.2",
   "description": "Prisma Studio 中文版:仅支持 PostgreSQL 的独立本地化版本,零运行时外部依赖",
   "license": "Apache-2.0",
   "author": "棋",
   "type": "module",
   "bin": {
-    "prisma-studio-zh": "build/cli.js"
+    "prisma-studio-cn": "build/cli.js"
   },
   "files": [
     "build/cli.js",
@@ -15,12 +15,15 @@
     "README.md",
     "LICENSE"
   ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/imqi1-github/prisma-studio-zh.git"
+    "url": "git+https://github.com/imqi1-github/prisma-studio-cn.git"
   },
-  "homepage": "https://github.com/imqi1-github/prisma-studio-zh#readme",
-  "bugs": "https://github.com/imqi1-github/prisma-studio-zh/issues",
+  "homepage": "https://github.com/imqi1-github/prisma-studio-cn#readme",
+  "bugs": "https://github.com/imqi1-github/prisma-studio-cn/issues",
   "keywords": [
     "prisma",
     "studio",
@@ -47,5 +50,9 @@
     "esbuild": "^0.25.0",
     "tsx": "^4.19.0",
     "typescript": "^5.4.0"
+  },
+  "allowScripts": {
+    "esbuild@0.25.12": true,
+    "esbuild@0.28.2": true
   }
 }

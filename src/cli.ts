@@ -11,7 +11,7 @@ import type { StudioAdapterType } from './studio-frontend-shared.js'
 /** 由构建脚本通过 esbuild define 注入 */
 declare const __STUDIO_CORE_VERSION__: string
 
-const CLI_NAME = 'prisma-studio-zh'
+const CLI_NAME = 'prisma-studio-cn'
 
 interface StudioArgs {
   help?: boolean
