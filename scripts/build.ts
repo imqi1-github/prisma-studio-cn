@@ -65,7 +65,8 @@ async function main(): Promise<void> {
 
   // ---- 4. 汉化补丁(构建期字符串替换) ----
   const frontendCode = fs.readFileSync(path.join(BUILD_DIR, 'studio.js'), 'utf8')
-  const { code: patchedCode, applied, missed } = applyChinesePatch(frontendCode)
+  const { code: localizedCode, applied, missed } = applyChinesePatch(frontendCode)
+  const { code: patchedCode, applied: sqlEditorPatchApplied } = applySqlEditorExecutionPatch(localizedCode)
   fs.writeFileSync(path.join(BUILD_DIR, 'studio.js'), patchedCode, 'utf8')
 
   // ---- 5. 保存 metafile 供 vendor 精简脚本使用 ----
@@ -80,9 +81,30 @@ async function main(): Promise<void> {
   console.log(`  build/studio.js  ${(fs.statSync(path.join(BUILD_DIR, 'studio.js')).size / 1024 / 1024).toFixed(2)} MB`)
   console.log(`  build/studio.css ${(fs.statSync(path.join(BUILD_DIR, 'studio.css')).size / 1024).toFixed(1)} KB`)
   console.log(`  汉化:构建期替换 ${applied} 处;字典中未在 bundle 命中的词条 ${missed.size} 个`)
+  console.log(`  SQL 编辑器:整段执行补丁 ${sqlEditorPatchApplied ? '已应用' : '未命中'}`)
 
   if (missed.size > 0) {
     console.log(`  未命中词条(可能为运行时动态文本,已由 DOM 兜底覆盖):${[...missed].slice(0, 20).join('、')}`)
+  }
+}
+
+/**
+ * Studio 原生 SQL 编辑器默认只执行光标所在的语句。
+ * 中文版用于执行初始化脚本和 DDL 时,应把编辑器中的整段 SQL 交给后端,
+ * 由 PostgreSQL 的多语句协议按分号顺序执行全部语句。
+ */
+function applySqlEditorExecutionPatch(code: string): { code: string; applied: boolean } {
+  const currentStatementExecution =
+    /function ([A-Za-z0-9_$]+)\(\)\{let [A-Za-z0-9_$]+=[A-Za-z0-9_$]+\.current,([A-Za-z0-9_$]+)=[A-Za-z0-9_$]+\.trim\(\);return![A-Za-z0-9_$]+\|\|\2\.length===0\?\2:[A-Za-z0-9_$]+\(\{cursorIndex:[A-Za-z0-9_$]+\.state\.selection\.main\.head,sql:[A-Za-z0-9_$]+\}\)\?\.statement\?\?\2\}/
+  const match = currentStatementExecution.exec(code)
+
+  if (match === null) {
+    throw new Error('未找到 Studio SQL 编辑器的当前语句执行逻辑,拒绝生成未修复的构建产物。')
+  }
+
+  return {
+    code: code.replace(match[0], `function ${match[1]}(){return ${match[2]}.trim()}`),
+    applied: true,
   }
 }
 
