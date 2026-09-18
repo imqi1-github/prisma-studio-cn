@@ -145,6 +145,14 @@ export const TRANSLATIONS: Record<string, string> = {
   'Optional': '可选',
   'Formatted value': '格式化后的值',
   'Copy selection as': '复制所选为',
+  // 多选行后工具条上的「复制为」下拉按钮及菜单项(界面显示为小写原文)
+  'copy as': '复制为',
+  'include column header': '包含表头',
+  'copy markdown': '复制为 Markdown',
+  'copy csv': '复制为 CSV',
+  'save markdown': '保存为 Markdown',
+  'save csv': '保存为 CSV',
+  'yes, write to db': '是,写入数据库',
   'Expand': '展开',
   'Collapse': '收起',
   'JSON editor': 'JSON 编辑器',
@@ -333,6 +341,10 @@ export const PATTERNS: Array<[RegExp, string]> = [
   [/^Discard edits to (\d+)\s+cells?\?$/, '放弃对 $1 个单元格的修改?'],
   [/^Discard changes to (\d+)\s+cells?\?$/, '放弃对 $1 个单元格的更改?'],
   [/^Delete (\d+)\s+rows?\?$/, '删除 $1 行?'],
+  // 多选行后工具条上的删除按钮(无问号)
+  [/^Delete (\d+)\s+rows?$/, '删除 $1 行'],
+  // 删除确认弹窗的提示语
+  [/^Do you want to delete (\d+)\s+rows?\?$/, '确定要删除 $1 行吗?'],
   [/^(\d+)\s+rows per page$/, '$1 行/页'],
   [/^Showing\s+([\d,]+)\s+of\s+([\d,]+)\s+rows?$/i, '显示 $1 / $2 行'],
   [/^Page\s+(\d+)\s+of\s+(\d+)$/i, '第 $1 / $2 页'],
@@ -345,6 +357,10 @@ export const PATTERNS: Array<[RegExp, string]> = [
   [/^Edge from (.+) to (.+)$/, '从「$1」到「$2」的关联'],
   [/^Notifications\s+(.+)$/, '通知($1)'],
   [/^Loading\s+(.+)$/i, '正在加载 $1'],
+  // 删除确认弹窗按钮:原文是泛词 "delete"/"keep",进构建期替换会误伤
+  // type:"delete" 等协议值,因此只放在运行时按整文本节点精确匹配
+  [/^delete$/, '删除'],
+  [/^keep$/, '保留'],
   // 相对时间
   [/^(\d+)\s+seconds? ago$/i, '$1 秒前'],
   [/^(\d+)\s+minutes? ago$/i, '$1 分钟前'],
