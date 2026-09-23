@@ -1,6 +1,6 @@
 {
   "name": "prisma-studio-cn",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Prisma Studio 中文版:仅支持 PostgreSQL 的独立本地化版本,零运行时外部依赖",
   "license": "Apache-2.0",
   "author": "棋",

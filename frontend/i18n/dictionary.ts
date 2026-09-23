@@ -234,6 +234,7 @@ export const TRANSLATIONS: Record<string, string> = {
   'Foreign key - references': '外键 - 引用',
   'Find roots': '查找根节点',
   'Zoom to Fit': '缩放至适应',
+  'Reset layout': '重置布局',
   'zoom in': '放大',
   'zoom out': '缩小',
   'fit view': '适应视图',
